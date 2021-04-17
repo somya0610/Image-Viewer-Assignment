@@ -1,0 +1,14 @@
+.login-card-container {
+    display: flex;
+    justify-content: center;
+}
+
+.login-card {
+    margin: 15px;
+    width: 400px;
+    padding: 20px 30px;
+}
+
+.login-form-control {
+    width: 365px;
+}
