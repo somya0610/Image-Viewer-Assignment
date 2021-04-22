@@ -17,6 +17,8 @@ class Login extends Component {
         this.state = {
             username: '',
             password: '',
+            usernameRequired: 'dispNone',
+            passwordRequired: 'dispNone',
             credentials: {
                 username: 'admin',
                 password: 'admin'
@@ -35,14 +37,26 @@ class Login extends Component {
     }
 
     loginHandler = () => {
+        this.state.username === '' ? this.setState({ usernameRequired: 'dispBlock' })
+            : this.setState({ usernameRequired: 'dispNone' });
+        this.state.password === '' ? this.setState({ passwordRequired: 'dispBlock' })
+            : this.setState({ passwordRequired: 'dispNone' });
+        if (this.state.username === "" || this.state.password === "") {
+            return;
+        }
+
         if (this.state.username === this.state.credentials.username
             && this.state.password === this.state.credentials.password) {
-            this.setState({ incorrectCredential: 'dispNone' });
+            this.setState({
+                incorrectCredential: 'dispNone'
+            });
             sessionStorage.setItem('access-token', this.state.accessToken);
             console.log(this.props);
             this.props.history.push("/home");
         } else {
-            this.setState({ incorrectCredential: 'dispBlock' });
+            this.setState({
+                incorrectCredential: 'dispBlock'
+            });
         }
     }
 
@@ -63,12 +77,18 @@ class Login extends Component {
                             <FormControl required className='login-form-control'>
                                 <InputLabel htmlFor='username'>Username</InputLabel>
                                 <Input id='username' type='text' onChange={this.inputUsernameChangeHandler} />
+                                <FormHelperText className={this.state.usernameRequired}>
+                                    <span className='credential-required'>required</span>
+                                </FormHelperText>
                             </FormControl>
                             <br />
                             <br />
                             <FormControl required className='login-form-control'>
                                 <InputLabel htmlFor='password'>Password</InputLabel>
                                 <Input id='password' type='text' onChange={this.inputPasswordChangeHandler} />
+                                <FormHelperText className={this.state.passwordRequired}>
+                                    <span className='credential-required'>required</span>
+                                </FormHelperText>
                             </FormControl>
                             <br />
                             <br />
