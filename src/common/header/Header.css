@@ -1,6 +1,7 @@
 .app-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background-color: #263238;
     height: 60px;
 }
@@ -9,4 +10,21 @@
     color: #fff;
     font-size: 18px;
     padding-left: 15px;
+}
+
+.app-header-right {
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    border-radius: 4px;
+    width: 300px;
+    background-color: #c0c0c0;
+    height: 35px;
+    margin-right: 10px;
+}
+
+.search-icon {
+    padding-left: 8px;
 }
