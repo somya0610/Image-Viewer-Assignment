@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Profile.css';
+import { Redirect } from 'react-router-dom';
 import Header from '../../common/header/Header';
 
 class Profile extends Component {
@@ -13,6 +14,11 @@ class Profile extends Component {
     }
 
     render() {
+        if (!this.state.loggedIn) {
+            return (
+                <Redirect to="/" />
+            )
+        }
         return (
             <div>
                 <Header loggedIn={this.state.loggedIn} history={this.props.history} />
