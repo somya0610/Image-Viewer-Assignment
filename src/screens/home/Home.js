@@ -14,7 +14,7 @@ class Home extends Component {
     render() {
         return (
             <div>
-                <Header loggedIn={this.state.loggedIn} homePage={true}/>
+                <Header loggedIn={this.state.loggedIn} history={this.props.history}/>
             </div>
         )
     }
