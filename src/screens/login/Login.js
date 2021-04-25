@@ -59,7 +59,6 @@ class Login extends Component {
                 incorrectCredential: 'dispNone'
             });
             sessionStorage.setItem('access-token', this.state.accessToken);
-            console.log(this.props);
             this.props.history.push("/home");
         } else {
             this.setState({
@@ -71,9 +70,8 @@ class Login extends Component {
     render() {
         return (
             <div>
-                {/** Header begins here */}
+                {/** Header component included here */}
                 <Header />
-                {/** Header ends here */}
 
                 {/** Login Card begins here */}
                 <div className="login-card-container">
