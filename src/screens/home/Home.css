@@ -1,0 +1,35 @@
+.media-container {
+    margin: 15px 100px;
+}
+
+.media-img {
+    width: 600px;
+}
+
+.media-dtl-divider {
+    margin: 10px 0;
+}
+
+.media-icon-section {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.comment-section {
+    min-height: 50px;
+}
+
+.comment-form-control {
+    width: 500px;
+    margin-right: 10px;
+}
+
+/* .add-comment-btn {
+    vertical-align: bottom;
+} */
+
+.MuiCardHeader-title {
+    font-style: 35px !important;
+    font-weight: bold !important;
+}

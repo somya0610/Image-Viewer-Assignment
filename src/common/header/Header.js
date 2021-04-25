@@ -68,6 +68,7 @@ class Header extends Component {
         this.props.history.push('/');
     }
 
+    /**Handler to take user back to Home page when clicked on logo */
     logoHandler = () => {
         this.props.history.push('/home');
     }
@@ -91,7 +92,7 @@ class Header extends Component {
                             {this.props.homePage ?
                                 <Input type="search" placeholder="Search…" disableUnderline className="search-box"
                                     startAdornment={
-                                        <InputAdornment position="start">
+                                        <InputAdornment position="start" className="search-icon">
                                             <SearchIcon />
                                         </InputAdornment>
                                     } onChange={this.props.searchHandler} /> : ''}

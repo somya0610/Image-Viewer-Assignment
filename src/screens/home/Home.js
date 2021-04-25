@@ -1,20 +1,168 @@
 import React, { Component } from 'react';
 import './Home.css';
 import Header from '../../common/header/Header';
+import profilePic from '../../assets/profilePic.jpg';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import Avatar from '@material-ui/core/Avatar';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import { red } from '@material-ui/core/colors';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import Button from '@material-ui/core/Button';
 
 class Home extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            loggedIn: sessionStorage.getItem("access-token") == null ? false : true
+            loggedIn: sessionStorage.getItem("access-token") == null ? false : true,
+            accessToken: sessionStorage.getItem("access-token"),
+            mediaList: [],
+            filteredMediaList: []
         }
+    }
+    componentDidMount() {
+        this.fetchImageDetails();
+    }
+
+    fetchImageDetails = () => {
+        let that = this;
+        fetch(
+            `https://graph.instagram.com/me/media?fields=id,caption&access_token=${sessionStorage.getItem("access-token")}`
+        )
+            .then(rsp => {
+                if (rsp.status === 200) {
+                    rsp.json().then(res => {
+                        console.log('res', res);
+                        //this.setState({mediaList: data});
+                        const promises = res.data.map(item =>
+                            fetch(
+                                `https://graph.instagram.com/${item.id}?fields=id,media_type,media_url,username,timestamp&access_token=${sessionStorage.getItem("access-token")}`
+                            )
+                        );
+                        Promise.all(promises)
+                            .then(responses => {
+                                return Promise.all(
+                                    responses.map(function (response) {
+                                        return response.json();
+                                    })
+                                );
+                            },
+                                err => console.log(err)
+                            )
+                            .then(function (data) {
+                                console.log("data", data);
+                                data.forEach((media, i) => {
+                                    const mediaCaption = res.data[i];
+                                    if (mediaCaption.caption) {
+                                        media.caption = mediaCaption.caption
+                                        media.hashtags = mediaCaption.caption.split(' ').filter(str => str.startsWith('#')).join(' ');
+                                        media.trimmedCaption = mediaCaption.caption.replace(/(^|\s)#[a-zA-Z0-9][^\\p{L}\\p{N}\\p{P}\\p{Z}][\w-]*\b/g, '');
+                                    } else {
+                                        media.caption = null;
+                                    }
+                                    const count = 0 + i;
+                                    media.likeCount = count;
+                                    media.likeStr = count > 1 ? 'likes' : 'like';
+                                    media.userLiked = false;
+                                    media.comments = [];
+                                    media.comment = '';
+
+                                    const mediaDate = new Date(media.timestamp);
+                                    const formattedDt = (mediaDate.getMonth()+1).toString().padStart(2, '0') + '/'
+                                    + mediaDate.getDate().toString().padStart(2, '0') + '/'
+                                    + mediaDate.getFullYear().toString().padStart(4, '0') + ' '
+                                    + mediaDate.getHours().toString().padStart(2, '0') + ':'
+                                    + mediaDate.getMinutes().toString().padStart(2, '0') + ':'
+                                    + mediaDate.getSeconds().toString().padStart(2, '0');
+                                    media.timestamp = formattedDt;
+                                });
+                                that.setState({ mediaList: data, filteredMediaList: data });
+                            },
+                                err => console.log(err)
+                            ).catch(err => console.log(err));
+                    });
+                }
+            },
+                err => console.log(err)
+            ).catch(err => console.log(err));
     }
 
     render() {
         return (
             <div>
-                <Header loggedIn={this.state.loggedIn} history={this.props.history}/>
+                {/** Header component included here */}
+                <Header loggedIn={this.state.loggedIn} homePage={true} history={this.props.history} />
+
+                {/** Image Card begins here */}
+                <div className="media-container">
+                    <Grid alignContent='center' container spacing={2} justify='flex-start' direction='row'>
+                        {this.state.filteredMediaList.map((media, index) => (
+                            <Grid item xs={6} key={"grid_" + media.id}>
+                                <Card key={"card_" + media.id} style={{ padding: '0 10px' }}>
+                                    <CardHeader
+                                        avatar={<Avatar variant="circular" src={profilePic} />}
+                                        // titleTypographyProps={{ fontSize: '30px', fontWeight: 'bold' }}
+                                        title={media.username}
+                                        // subheaderTypographyProps={mediaCardStyles.subheader}
+                                        subheader={new Date(media.timestamp)} />
+                                    <CardContent>
+                                        <div>
+                                            <img src={media.media_url} alt={media.media_url} className="media-img" />
+                                        </div>
+                                        <div className="media-dtl-divider">
+                                            <Divider variant="fullWidth" />
+                                        </div>
+                                        <div>
+                                            <Typography style={{ fontSize: '15px' }}>{media.trimmedCaption}</Typography>
+                                            <Typography style={{ fontSize: '15px', color: '#0ab7ff' }}>
+                                                {media.hashtags}
+                                            </Typography>
+                                        </div>
+                                        <div className="media-icon-section">
+                                            {media.userLiked ?
+                                                <FavoriteIcon style={{ color: red[500], fontSize: 30 }} />
+                                                :
+                                                <FavoriteBorderIcon style={{ fontSize: 30 }} />}
+                                            <Typography style={{ paddingLeft: 15 }}>
+                                                {media.likeCount + ' ' + media.likeStr}
+                                            </Typography>
+                                        </div>
+                                        <div className="comment-section">
+                                            {media.comments.length > 0 ?
+                                                (media.comments[index].map((comment, i) => (
+                                                    <p key={'comment_' + index + '_' + i} style={{ margin: '0 0 10px 0' }}>
+                                                        <b>{media.username}:</b> {comment}
+                                                    </p>
+                                                )))
+                                                : ''}
+                                        </div>
+                                        <div>
+                                            <FormControl style={{ marginRight: 10 }} className='comment-form-control'>
+                                                <InputLabel htmlFor={'comment_' + index}>Add a comment</InputLabel>
+                                                <Input id={'comment_' + index} type='input' value=
+                                                    {media.comment ? media.comment : ''} />
+                                            </FormControl>
+                                            <FormControl style={{ verticalAlign: "bottom" }}>
+                                                <Button variant='contained' color='primary'>
+                                                    ADD
+                                                </Button>
+                                            </FormControl>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </div>
+                {/** Image Card ends here */}
             </div>
         )
     }
