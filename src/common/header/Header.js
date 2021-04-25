@@ -68,21 +68,33 @@ class Header extends Component {
         this.props.history.push('/');
     }
 
+    logoHandler = () => {
+        this.props.history.push('/home');
+    }
+
     render() {
         return (
             <div>
                 <header className="app-header">
-                    <span className="app-logo">Image Viewer</span>
+                    {this.props.loggedIn && this.props.history.location.pathname === '/profile' ?
+                        <div onClick={this.logoHandler} className="app-logo-clickable">
+                            <span className="app-logo">Image Viewer</span>
+                        </div>
+                        :
+                        <div>
+                            <span className="app-logo">Image Viewer</span>
+                        </div>}
                     {/**Below section needs to be displayed only for Home Page */}
                     {/**Home Page Header section starts here */}
                     {this.props.loggedIn ?
                         <div className="app-header-right">
-                            <Input type="search" placeholder="Search…" disableUnderline className="search-box"
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <SearchIcon className="search-icon" />
-                                    </InputAdornment>
-                                } />
+                            {this.props.homePage ?
+                                <Input type="search" placeholder="Search…" disableUnderline className="search-box"
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    } onChange={this.props.searchHandler} /> : ''}
                             <IconButton aria-controls="simple-menu" aria-haspopup="true"
                                 onClick={this.profileIconHandler} style={{ padding: "5px 10px" }}>
                                 <Avatar variant="circular" alt={profilePic} src={profilePic} ></Avatar>
@@ -90,10 +102,14 @@ class Header extends Component {
                             <StyledMenu id="simple-menu" open={this.state.openMenu} onClose={this.closeMenu}
                                 anchorEl={this.state.anchorEl} getContentAnchorEl={null}
                                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }} keepMounted>
-                                <StyledMenuItem onClick={this.myAccountHandler}>
-                                    <Typography>My Account</Typography>
-                                </StyledMenuItem>
-                                <Divider variant="fullWidth" />
+                                {this.props.homePage ?
+                                    <StyledMenuItem onClick={this.myAccountHandler}>
+                                        <Typography>My Account</Typography>
+                                    </StyledMenuItem>
+                                    : ''}
+                                {this.props.homePage ?
+                                    <Divider variant="middle" />
+                                    : ''}
                                 <StyledMenuItem onClick={this.logoutHandler}>
                                     <Typography>Logout</Typography>
                                 </StyledMenuItem>
