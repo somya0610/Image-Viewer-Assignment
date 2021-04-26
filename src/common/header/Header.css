@@ -36,3 +36,7 @@
 .app-logo-clickable {
     cursor: pointer;
 }
+
+.search-box>.MuiInputBase-input {
+    padding-top: 14px;
+}

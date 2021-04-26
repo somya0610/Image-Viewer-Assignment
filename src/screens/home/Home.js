@@ -123,11 +123,13 @@ class Home extends Component {
     /** Handler to add comment in an image card */
     addCommentHandler = (idx) => {
         let tempMediaList = this.state.filteredMediaList;
-        let tempComments = tempMediaList[idx].comments;
-        tempComments.push({ commentStr: tempMediaList[idx].comment });
-        tempMediaList[idx].comments = tempComments;
-        tempMediaList[idx].comment = '';
-        this.setState({ filteredMediaList: tempMediaList });
+        if (tempMediaList[idx].comment) {
+            let tempComments = tempMediaList[idx].comments;
+            tempComments.push({ commentStr: tempMediaList[idx].comment });
+            tempMediaList[idx].comments = tempComments;
+            tempMediaList[idx].comment = '';
+            this.setState({ filteredMediaList: tempMediaList });
+        }
     }
 
     /** Handler to search images based to the search text entered by the user*/

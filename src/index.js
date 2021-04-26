@@ -4,8 +4,6 @@ import './index.css';
 import ImageViewerController from './screens/ImageViewerController';
 
 ReactDOM.render(
-    <React.StrictMode>
-        <ImageViewerController />
-    </React.StrictMode>,
+    <ImageViewerController />,
     document.getElementById('root')
 );
