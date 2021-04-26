@@ -33,8 +33,7 @@ class Home extends Component {
         this.fetchImageDetails();
     }
 
-    
-
+    /** Method to fetch data from instagram graph endpoint */
     fetchImageDetails = () => {
         let that = this;
         fetch(
@@ -78,6 +77,7 @@ class Home extends Component {
                                     media.comments = [];
                                     media.comment = '';
 
+                                    /** Method to change date format to mm/dd/yyyy HH:MM:SS format */
                                     const mediaDate = new Date(media.timestamp);
                                     const formattedDt = (mediaDate.getMonth() + 1).toString().padStart(2, '0') + '/'
                                         + mediaDate.getDate().toString().padStart(2, '0') + '/'
@@ -98,6 +98,7 @@ class Home extends Component {
             ).catch(err => console.log(err));
     }
 
+    /** Method to increase/ decrease like count for an image */
     favIconClickHandler = (likeIdx) => {
         let tempMediaList = this.state.filteredMediaList;
         tempMediaList.forEach((mediaObj, index) => {
@@ -108,6 +109,23 @@ class Home extends Component {
             }
         });
         this.setState({ filteredMediaList: tempMediaList });
+    }
+
+    /** Method to update comment in state variable */
+    inputCommentChangeHandler = (e, idx) => {
+        let tempMediaList = this.state.filteredMediaList;
+        tempMediaList[idx].comment = e.target.value;
+        this.setState({ filteredMediaList: tempMediaList });
+    }
+
+    /** Method to add comment in an image card */
+    addCommentHandler = (idx) => {
+        let tempMediaList = this.state.filteredMediaList;
+        let tempComments = tempMediaList[idx].comments;
+        tempComments.push({ commentStr: tempMediaList[idx].comment });
+        tempMediaList[idx].comments = tempComments;
+        tempMediaList[idx].comment = '';
+        this.setState({ filteredMediaList : tempMediaList });
     }
 
     render() {
@@ -152,9 +170,9 @@ class Home extends Component {
                                         </div>
                                         <div className="comment-section">
                                             {media.comments.length > 0 ?
-                                                (media.comments[index].map((comment, i) => (
+                                                (media.comments.map((comment, i) => (
                                                     <p key={'comment_' + index + '_' + i} style={{ margin: '0 0 10px 0' }}>
-                                                        <b>{media.username}:</b> {comment}
+                                                        <b>{media.username}:</b> {comment.commentStr}
                                                     </p>
                                                 )))
                                                 : ''}
@@ -162,11 +180,13 @@ class Home extends Component {
                                         <div>
                                             <FormControl style={{ marginRight: 10 }} className='comment-form-control'>
                                                 <InputLabel htmlFor={'comment_' + index}>Add a comment</InputLabel>
-                                                <Input id={'comment_' + index} type='input' value=
-                                                    {media.comment ? media.comment : ''} />
+                                                <Input id={'comment_' + index} type='input'
+                                                    value={media.comment ? media.comment : ''}
+                                                    onChange={(e) => this.inputCommentChangeHandler(e, index)} />
                                             </FormControl>
                                             <FormControl style={{ verticalAlign: "bottom" }}>
-                                                <Button variant='contained' color='primary'>
+                                                <Button variant='contained' color='primary'
+                                                    onClick={() => this.addCommentHandler(index)}>
                                                     ADD
                                                 </Button>
                                             </FormControl>
