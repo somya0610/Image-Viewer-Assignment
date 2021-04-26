@@ -29,17 +29,13 @@ const styles = theme => ({
     editIcon: {
         margin: '10px 0 0 10px',
     },
-    modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
     editModalContent: {
         backgroundColor: 'white',
         width: 200,
         padding: 25,
         borderRadius: 4,
-        border: '2px solid #dcd6d6'
+        border: '2px solid #dcd6d6',
+        outline: 0
     },
     mediaModalContent: {
         display: 'flex',
@@ -48,7 +44,8 @@ const styles = theme => ({
         width: 800,
         padding: 25,
         borderRadius: 4,
-        border: '2px solid #dcd6d6'
+        border: '2px solid #dcd6d6',
+        outline: 0
     }
 });
 
@@ -78,8 +75,10 @@ class Profile extends Component {
     }
 
     componentDidMount() {
-        this.fectchUserName();
-        this.fetchImageDetails();
+        if (sessionStorage.getItem("access-token")) {
+            this.fectchUserName();
+            this.fetchImageDetails();
+        }
     }
 
     /** Method to fetch user details from instagram graph endpoint */
@@ -89,7 +88,6 @@ class Profile extends Component {
             .then(resp => {
                 if (resp.status === 200) {
                     resp.json().then(resp => {
-                        console.log(resp);
                         this.setState({ username: resp.username })
                     });
                 }
@@ -108,7 +106,6 @@ class Profile extends Component {
             .then(rsp => {
                 if (rsp.status === 200) {
                     rsp.json().then(res => {
-                        console.log('res', res);
                         this.setState({ numOfPosts: res.data.length });
                         const promises = res.data.map(item =>
                             fetch(
@@ -126,7 +123,6 @@ class Profile extends Component {
                                 err => console.log(err)
                             )
                             .then(function (data) {
-                                console.log("data", data);
                                 data.forEach((media, i) => {
                                     const mediaCaption = res.data[i];
                                     if (mediaCaption.caption) {
@@ -136,22 +132,10 @@ class Profile extends Component {
                                     } else {
                                         media.caption = null;
                                     }
-                                    console.log(that.state.likeCountList);
-                                    console.log(that.state.commentList);
                                     media.likeCount = that.state.likeCountList[i].count;
                                     media.likeStr = that.state.likeCountList[i].likeStr;
                                     media.userLiked = that.state.likeCountList[i].userLiked;
                                     media.comments = that.state.commentList[i];
-
-                                    // /** Method to change date format to mm/dd/yyyy HH:MM:SS format */
-                                    // const mediaDate = new Date(media.timestamp);
-                                    // const formattedDt = (mediaDate.getMonth() + 1).toString().padStart(2, '0') + '/'
-                                    //     + mediaDate.getDate().toString().padStart(2, '0') + '/'
-                                    //     + mediaDate.getFullYear().toString().padStart(4, '0') + ' '
-                                    //     + mediaDate.getHours().toString().padStart(2, '0') + ':'
-                                    //     + mediaDate.getMinutes().toString().padStart(2, '0') + ':'
-                                    //     + mediaDate.getSeconds().toString().padStart(2, '0');
-                                    // media.timestamp = formattedDt;
                                 });
                                 that.setState({ mediaList: data, filteredMediaList: data });
                             },
@@ -166,8 +150,6 @@ class Profile extends Component {
 
     /** Handler to open Edit modal when user clicks Edit icon */
     openEditModalHandler = () => {
-        console.log(this.state.likeCountList);
-        console.log(this.state.commentList);
         this.setState({ editModalIsopen: !this.state.editModalIsopen })
     }
 
@@ -200,33 +182,7 @@ class Profile extends Component {
         })
     }
 
-    openMediaModalHandler = (mediaId) => {
-        var idx = 0;
-        var media = this.state.mediaDetailList.filter((media, index) => {
-            if (media.id === mediaId) {
-                idx = index;
-                return true;
-            }
-            return false;
-        })[0];
-        var hashtags = media.caption.split(' ').filter(str => str.startsWith('#')).join(' ');
-        media.caption = media.caption.replace(/(^|\s)#[a-zA-Z0-9][^\\p{L}\\p{N}\\p{P}\\p{Z}][\w-]*\b/g, '');
-
-        this.setState({
-            mediaModalIsopen: !this.state.mediaModalIsopen,
-            selecetedMedia: media,
-            selectedIndex: idx,
-            selectedHashTags: hashtags,
-        });
-        console.log(this.state.commentList[idx].length);
-    }
-
-    closeMediaModalHandler = () => {
-        this.setState({
-            mediaModalIsopen: !this.state.mediaModalIsopen
-        })
-    }
-
+    /** Handler to open respective image modal when clicked on any image */
     openMediaModalHandler = (mediaId) => {
         var idx = 0;
         var media = this.state.mediaList.filter((media, index) => {
@@ -236,20 +192,22 @@ class Profile extends Component {
             }
             return false;
         })[0];
-        console.log("hiii");
         this.setState({
             mediaModalIsopen: !this.state.mediaModalIsopen,
             selecetedMedia: media,
             selectedIndex: idx
         });
     }
-
+    
+    /** Handler to close image modal */
     closeMediaModalHandler = () => {
         this.setState({
             mediaModalIsopen: !this.state.mediaModalIsopen
         })
     }
 
+    
+    /** Handler to increase/ decrease like count when a user clikes the like icon */
     favIconClickHandler = () => {
         let tempMediaList = this.state.mediaList;
         tempMediaList[this.state.selectedIndex].userLiked
@@ -262,10 +220,12 @@ class Profile extends Component {
         this.setState({ mediaList: tempMediaList });
     }
 
+    /** Handler to update 'Comment' state variable as user enters details on the screen */
     inputCommentChangeHandler = (e) => {
         this.setState({ comment: e.target.value });
     }
 
+    /** Handler to add comment on a particular image */
     addCommentHandler = () => {
         if (this.state.comment) {
             let tempMediaList = this.state.mediaList;
@@ -279,8 +239,6 @@ class Profile extends Component {
             });
         }
         document.getElementById('comment').value = '';
-
-
     }
 
     render() {
@@ -348,12 +306,11 @@ class Profile extends Component {
 
                 {/** Edit Modal section starts here */}
                 <Modal open={this.state.editModalIsopen} onClose={this.closeEditModalHandler}
-                    className="edit-name-modal">
+                    className="modal">
                     <div className={classes.editModalContent} style={{
                         top: "50%",
                         left: "50%",
-                        transform: "translate(-50%, -50%)", position: 'relative'
-                    }}>
+                        transform: "translate(-50%, -50%)", position: 'relative'}}>
                         <FormControl className="modal-heading">
                             <Typography variant="h4">
                                 Edit
@@ -379,8 +336,11 @@ class Profile extends Component {
                 {/** Edit Modal section ends here */}
 
                 {/** Image Modal section starts here */}
-                <Modal open={this.state.mediaModalIsopen} onClose={this.closeMediaModalHandler} className={classes.modal}>
-                    <div className={classes.mediaModalContent}>
+                <Modal open={this.state.mediaModalIsopen} onClose={this.closeMediaModalHandler} className="modal">
+                    <div className={classes.mediaModalContent} style={{
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)", position: 'relative'}}>
                         <div className="image-modal-left">
                             <img src={this.state.selecetedMedia.media_url} alt={this.state.selecetedMedia.media_url}
                                 className="modal-media-img" />

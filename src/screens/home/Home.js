@@ -24,7 +24,6 @@ class Home extends Component {
         super(props);
         this.state = {
             loggedIn: sessionStorage.getItem("access-token") == null ? false : true,
-            accessToken: sessionStorage.getItem("access-token"),
             mediaList: [],
             filteredMediaList: [],
             searchText: ''
@@ -32,7 +31,9 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        this.fetchImageDetails();
+        if (sessionStorage.getItem("access-token")) {
+            this.fetchImageDetails();
+        }
     }
 
     /** Method to fetch data from instagram graph endpoint */
@@ -69,6 +70,8 @@ class Home extends Component {
                                     } else {
                                         media.caption = null;
                                     }
+
+                                    /** Adding likes and comments into each image */
                                     const count = 0 + i;
                                     media.likeCount = count;
                                     media.likeStr = count > 1 ? 'likes' : 'like';
@@ -124,7 +127,7 @@ class Home extends Component {
         tempComments.push({ commentStr: tempMediaList[idx].comment });
         tempMediaList[idx].comments = tempComments;
         tempMediaList[idx].comment = '';
-        this.setState({ filteredMediaList : tempMediaList });
+        this.setState({ filteredMediaList: tempMediaList });
     }
 
     /** Handler to search images based to the search text entered by the user*/
@@ -153,7 +156,7 @@ class Home extends Component {
             likeCountList.push({
                 count: media.likeCount,
                 likeStr: media.likeStr,
-                userLiked: media.userLiked                
+                userLiked: media.userLiked
             })
             commentList.push(media.comments);
         });
@@ -172,7 +175,7 @@ class Home extends Component {
             <div>
                 {/** Header component included here */}
                 <Header loggedIn={this.state.loggedIn} homePage={true}
-                    history={this.props.history} searchHandler={this.searchHandler} myAccountHandler={this.myAccountHandler}/>
+                    history={this.props.history} searchHandler={this.searchHandler} myAccountHandler={this.myAccountHandler} />
 
                 {/** Image Card begins here */}
                 <div className="media-container">
