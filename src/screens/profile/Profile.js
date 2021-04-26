@@ -32,8 +32,7 @@ const styles = theme => ({
     modal: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-
+        justifyContent: 'center'
     },
     editModalContent: {
         backgroundColor: 'white',
@@ -42,6 +41,15 @@ const styles = theme => ({
         borderRadius: 4,
         border: '2px solid #dcd6d6'
     },
+    mediaModalContent: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+        width: 800,
+        padding: 25,
+        borderRadius: 4,
+        border: '2px solid #dcd6d6'
+    }
 });
 
 class Profile extends Component {
@@ -63,6 +71,9 @@ class Profile extends Component {
             mediaModalIsopen: false,
             fullName: '',
             fullNameRequired: 'dispNone',
+            selecetedMedia: {},
+            selectedIndex: null,
+            comment: ''
         };
     }
 
@@ -131,7 +142,6 @@ class Profile extends Component {
                                     media.likeStr = that.state.likeCountList[i].likeStr;
                                     media.userLiked = that.state.likeCountList[i].userLiked;
                                     media.comments = that.state.commentList[i];
-                                    media.comment = '';
 
                                     // /** Method to change date format to mm/dd/yyyy HH:MM:SS format */
                                     // const mediaDate = new Date(media.timestamp);
@@ -190,6 +200,89 @@ class Profile extends Component {
         })
     }
 
+    openMediaModalHandler = (mediaId) => {
+        var idx = 0;
+        var media = this.state.mediaDetailList.filter((media, index) => {
+            if (media.id === mediaId) {
+                idx = index;
+                return true;
+            }
+            return false;
+        })[0];
+        var hashtags = media.caption.split(' ').filter(str => str.startsWith('#')).join(' ');
+        media.caption = media.caption.replace(/(^|\s)#[a-zA-Z0-9][^\\p{L}\\p{N}\\p{P}\\p{Z}][\w-]*\b/g, '');
+
+        this.setState({
+            mediaModalIsopen: !this.state.mediaModalIsopen,
+            selecetedMedia: media,
+            selectedIndex: idx,
+            selectedHashTags: hashtags,
+        });
+        console.log(this.state.commentList[idx].length);
+    }
+
+    closeMediaModalHandler = () => {
+        this.setState({
+            mediaModalIsopen: !this.state.mediaModalIsopen
+        })
+    }
+
+    openMediaModalHandler = (mediaId) => {
+        var idx = 0;
+        var media = this.state.mediaList.filter((media, index) => {
+            if (media.id === mediaId) {
+                idx = index;
+                return true;
+            }
+            return false;
+        })[0];
+        console.log("hiii");
+        this.setState({
+            mediaModalIsopen: !this.state.mediaModalIsopen,
+            selecetedMedia: media,
+            selectedIndex: idx
+        });
+    }
+
+    closeMediaModalHandler = () => {
+        this.setState({
+            mediaModalIsopen: !this.state.mediaModalIsopen
+        })
+    }
+
+    favIconClickHandler = () => {
+        let tempMediaList = this.state.mediaList;
+        tempMediaList[this.state.selectedIndex].userLiked
+            ? --tempMediaList[this.state.selectedIndex].likeCount
+            : ++tempMediaList[this.state.selectedIndex].likeCount;
+        tempMediaList[this.state.selectedIndex].likeCount > 1
+            ? tempMediaList[this.state.selectedIndex].likeStr = 'likes'
+            : tempMediaList[this.state.selectedIndex].likeStr = 'like';
+        tempMediaList[this.state.selectedIndex].userLiked = !tempMediaList[this.state.selectedIndex].userLiked;
+        this.setState({ mediaList: tempMediaList });
+    }
+
+    inputCommentChangeHandler = (e) => {
+        this.setState({ comment: e.target.value });
+    }
+
+    addCommentHandler = () => {
+        if (this.state.comment) {
+            let tempMediaList = this.state.mediaList;
+            let tempComments = tempMediaList[this.state.selectedIndex].comments;
+            tempComments.push({ commentStr: this.state.comment });
+            tempMediaList[this.state.selectedIndex].comments = tempComments;
+            tempMediaList[this.state.selectedIndex].comment = '';
+            this.setState({
+                mediaList: tempMediaList,
+                comment: ''
+            });
+        }
+        document.getElementById('comment').value = '';
+
+
+    }
+
     render() {
         if (!this.state.loggedIn) {
             return (
@@ -244,9 +337,9 @@ class Profile extends Component {
                 <div className="image-section">
                     <GridList cols={3} cellHeight={450}>
                         {this.state.mediaList.map(media => (
-                            <GridListTile
+                            <GridListTile onClick={() => this.openMediaModalHandler(media.id)}
                                 key={"grid_" + media.id}>
-                                <img src={media.media_url} alt={media.caption} />
+                                <img src={media.media_url} alt={media.caption} style={{ cursor: 'pointer' }} />
                             </GridListTile>
                         ))}
                     </GridList>
@@ -284,6 +377,70 @@ class Profile extends Component {
                     </div>
                 </Modal>
                 {/** Edit Modal section ends here */}
+
+                {/** Image Modal section starts here */}
+                <Modal open={this.state.mediaModalIsopen} onClose={this.closeMediaModalHandler} className={classes.modal}>
+                    <div className={classes.mediaModalContent}>
+                        <div className="image-modal-left">
+                            <img src={this.state.selecetedMedia.media_url} alt={this.state.selecetedMedia.media_url}
+                                className="modal-media-img" />
+                        </div>
+                        <div className="image-modal-right">
+                            <div className="media-header">
+                                <Avatar variant="circular" alt="Profile Picture" src={profilePic}></Avatar>
+                                <Typography variant="h4" style={{ paddingLeft: '10px' }}>
+                                    {this.state.selecetedMedia.username}
+                                </Typography>
+                            </div>
+                            <div className="media-dtl-divider">
+                                <Divider variant="fullWidth" />
+                            </div>
+                            <div className="media-caption">
+                                <Typography style={{ fontSize: '14px' }}>
+                                    {this.state.selecetedMedia.trimmedCaption}
+                                </Typography>
+                                <Typography style={{ fontSize: '14px', color: '#0ab7ff' }}>
+                                    {this.state.selecetedMedia.hashtags}
+                                </Typography>
+                            </div>
+                            <div className="modal-comment-section">
+                                {this.state.selecetedMedia.comments && this.state.selecetedMedia.comments.length > 0 ?
+                                    (this.state.selecetedMedia.comments.map((comment, i) => (
+                                        <p key={'comment_' + this.state.selectedIndex + '_' + i} style={{ margin: '0 0 6px 0' }}>
+                                            <b>{this.state.selecetedMedia.username}:</b> {comment.commentStr}
+                                        </p>
+                                    )))
+                                    : ''}
+                            </div>
+                            <div className="modal-media-icon-section">
+                                {this.state.selecetedMedia.userLiked ?
+                                    <FavoriteIcon fontSize='default' style={{ color: red[500], fontSize: 30 }}
+                                        onClick={() => this.favIconClickHandler()} />
+                                    :
+                                    <FavoriteBorderIcon style={{ fontSize: 30 }}
+                                        onClick={() => this.favIconClickHandler()} />}
+                                <Typography style={{ paddingLeft: 15, fontSize: 14 }}>
+                                    {this.state.selecetedMedia.likeCount + ' '
+                                        + this.state.selecetedMedia.likeStr}
+                                </Typography>
+                            </div>
+                            <div>
+                                <FormControl style={{ marginRight: 10 }} className='modal-comment-form-control'>
+                                    <InputLabel htmlFor='comment'>Add a comment</InputLabel>
+                                    <Input id='comment' type='text' value={this.state.comment}
+                                        onChange={this.inputCommentChangeHandler} />
+                                </FormControl>
+                                <FormControl style={{ verticalAlign: "bottom" }}>
+                                    <Button variant='contained' color='primary'
+                                        onClick={this.addCommentHandler}>
+                                        ADD
+                                    </Button>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </div>
+                </Modal>
+                {/** Image Modal section ends here */}
             </div >
 
         )

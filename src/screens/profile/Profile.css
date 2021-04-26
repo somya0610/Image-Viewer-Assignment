@@ -51,3 +51,42 @@
 .image-section {
     margin: 40px 70px;
 }
+
+.image-modal-left {
+    padding-right: 15px;
+}
+
+.image-modal-right {
+    width: 50%;
+}
+.modal-media-img {
+    width: 400px;
+    height: auto;
+}
+
+.media-header {
+    display: flex;
+}
+
+.media-dtl-divider {
+    margin: 10px 0;
+}
+
+.media-caption {
+    margin-bottom: 15px;
+}
+
+.modal-comment-section {
+    height: 220px;
+}
+
+.modal-media-icon-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.modal-comment-form-control {
+    width: 310px;
+    margin-right: 10px;
+}
