@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import './Home.css';
 import Header from '../../common/header/Header';
 import profilePic from '../../assets/profilePic.jpg';
@@ -129,6 +130,11 @@ class Home extends Component {
     }
 
     render() {
+        if (!this.state.loggedIn) {
+            return (
+                <Redirect to="/" />
+            )
+        }
         return (
             <div>
                 {/** Header component included here */}
