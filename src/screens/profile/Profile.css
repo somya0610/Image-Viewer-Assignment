@@ -20,3 +20,30 @@
     width: 500px;
     margin-top: 8px;
 }
+
+.modal-heading {
+    padding-top: 10px;
+}
+
+.dispNone {
+    display: none;
+}
+
+.dispBlock {
+   display: block;
+}
+
+.required {
+    color: red;
+}
+
+.edit-name-modal > div:first-child {
+    background-color: white !important;
+    opacity: 0.7 !important;
+}
+
+.edit-name-modal {
+    display: 'flex';
+    align-items: 'center';
+    justify-content: 'center';
+}
