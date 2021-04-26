@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 const styles = theme => ({
     avatar: {
@@ -53,99 +54,101 @@ class Profile extends Component {
             following: 250,
             name: 'Somya Chowdhary',
             editModalIsopen: false,
-            mediaModalIsopen: false
+            mediaModalIsopen: false,
+            fullName: '',
+            fullNameRequired: 'dispNone',
         };
     }
 
-    // componentDidMount() {
-    //     this.fectchUserName();
-    //     this.fetchImageDetails();
-    // }
+    componentDidMount() {
+        this.fectchUserName();
+        this.fetchImageDetails();
+    }
 
     /** Method to fetch user details from instagram graph endpoint */
-    // fectchUserName = () => {
-    //     let url = this.props.baseUrl + "me?fields=id,username&access_token=" + this.state.accessToken;
-    //     fetch(url)
-    //         .then(resp => {
-    //             if (resp.status === 200) {
-    //                 resp.json().then(resp => {
-    //                     console.log(resp);
-    //                     this.setState({ username: resp.username })
-    //                 });
-    //             }
-    //         },
-    //             err => console.log(err)
-    //         )
-    //         .catch(err => console.log(err));
-    // }
+    fectchUserName = () => {
+        let url = this.props.baseUrl + "me?fields=id,username&access_token=" + this.state.accessToken;
+        fetch(url)
+            .then(resp => {
+                if (resp.status === 200) {
+                    resp.json().then(resp => {
+                        console.log(resp);
+                        this.setState({ username: resp.username })
+                    });
+                }
+            },
+                err => console.log(err)
+            )
+            .catch(err => console.log(err));
+    }
 
     /** Method to fetch data from instagram graph endpoint */
-    // fetchImageDetails = () => {
-    //     let that = this;
-    //     fetch(
-    //         `https://graph.instagram.com/me/media?fields=id,caption&access_token=${this.state.accessToken}`
-    //     )
-    //         .then(rsp => {
-    //             if (rsp.status === 200) {
-    //                 rsp.json().then(res => {
-    //                     console.log('res', res);
-    //                     this.setState({numOfPosts: res.data.length});
-    //                     const promises = res.data.map(item =>
-    //                         fetch(
-    //                             `https://graph.instagram.com/${item.id}?fields=id,media_type,media_url,username,timestamp&access_token=${this.state.accessToken}`
-    //                         )
-    //                     );
-    //                     Promise.all(promises)
-    //                         .then(responses => {
-    //                             return Promise.all(
-    //                                 responses.map(function (response) {
-    //                                     return response.json();
-    //                                 })
-    //                             );
-    //                         },
-    //                             err => console.log(err)
-    //                         )
-    //                         .then(function (data) {
-    //                             console.log("data", data);
-    //                             data.forEach((media, i) => {
-    //                                 const mediaCaption = res.data[i];
-    //                                 if (mediaCaption.caption) {
-    //                                     media.caption = mediaCaption.caption
-    //                                     media.hashtags = mediaCaption.caption.split(' ').filter(str => str.startsWith('#')).join(' ');
-    //                                     media.trimmedCaption = mediaCaption.caption.replace(/(^|\s)#[a-zA-Z0-9][^\\p{L}\\p{N}\\p{P}\\p{Z}][\w-]*\b/g, '');
-    //                                 } else {
-    //                                     media.caption = null;
-    //                                 }
-    //                                 console.log(that.state.likeCountList);
-    //                                 //console.log(this.state.likeCountList);
-    //                                 console.log(that.state.commentList);
-    //                                 //console.log(this.state.commentList);
-    //                                 media.likeCount = that.state.likeCountList[i].count;
-    //                                 media.likeStr = that.state.likeCountList[i].likeStr;
-    //                                 media.userLiked = that.state.likeCountList[i].userLiked;
-    //                                 media.comments = that.state.commentList[i];
-    //                                 media.comment = '';
+    fetchImageDetails = () => {
+        let that = this;
+        fetch(
+            `https://graph.instagram.com/me/media?fields=id,caption&access_token=${this.state.accessToken}`
+        )
+            .then(rsp => {
+                if (rsp.status === 200) {
+                    rsp.json().then(res => {
+                        console.log('res', res);
+                        this.setState({numOfPosts: res.data.length});
+                        const promises = res.data.map(item =>
+                            fetch(
+                                `https://graph.instagram.com/${item.id}?fields=id,media_type,media_url,username,timestamp&access_token=${this.state.accessToken}`
+                            )
+                        );
+                        Promise.all(promises)
+                            .then(responses => {
+                                return Promise.all(
+                                    responses.map(function (response) {
+                                        return response.json();
+                                    })
+                                );
+                            },
+                                err => console.log(err)
+                            )
+                            .then(function (data) {
+                                console.log("data", data);
+                                data.forEach((media, i) => {
+                                    const mediaCaption = res.data[i];
+                                    if (mediaCaption.caption) {
+                                        media.caption = mediaCaption.caption
+                                        media.hashtags = mediaCaption.caption.split(' ').filter(str => str.startsWith('#')).join(' ');
+                                        media.trimmedCaption = mediaCaption.caption.replace(/(^|\s)#[a-zA-Z0-9][^\\p{L}\\p{N}\\p{P}\\p{Z}][\w-]*\b/g, '');
+                                    } else {
+                                        media.caption = null;
+                                    }
+                                    console.log(that.state.likeCountList);
+                                    //console.log(this.state.likeCountList);
+                                    console.log(that.state.commentList);
+                                    //console.log(this.state.commentList);
+                                    media.likeCount = that.state.likeCountList[i].count;
+                                    media.likeStr = that.state.likeCountList[i].likeStr;
+                                    media.userLiked = that.state.likeCountList[i].userLiked;
+                                    media.comments = that.state.commentList[i];
+                                    media.comment = '';
 
-    //                                 // /** Method to change date format to mm/dd/yyyy HH:MM:SS format */
-    //                                 // const mediaDate = new Date(media.timestamp);
-    //                                 // const formattedDt = (mediaDate.getMonth() + 1).toString().padStart(2, '0') + '/'
-    //                                 //     + mediaDate.getDate().toString().padStart(2, '0') + '/'
-    //                                 //     + mediaDate.getFullYear().toString().padStart(4, '0') + ' '
-    //                                 //     + mediaDate.getHours().toString().padStart(2, '0') + ':'
-    //                                 //     + mediaDate.getMinutes().toString().padStart(2, '0') + ':'
-    //                                 //     + mediaDate.getSeconds().toString().padStart(2, '0');
-    //                                 // media.timestamp = formattedDt;
-    //                             });
-    //                             that.setState({ mediaList: data, filteredMediaList: data });
-    //                         },
-    //                             err => console.log(err)
-    //                         ).catch(err => console.log(err));
-    //                 });
-    //             }
-    //         },
-    //             err => console.log(err)
-    //         ).catch(err => console.log(err));
-    // }
+                                    // /** Method to change date format to mm/dd/yyyy HH:MM:SS format */
+                                    // const mediaDate = new Date(media.timestamp);
+                                    // const formattedDt = (mediaDate.getMonth() + 1).toString().padStart(2, '0') + '/'
+                                    //     + mediaDate.getDate().toString().padStart(2, '0') + '/'
+                                    //     + mediaDate.getFullYear().toString().padStart(4, '0') + ' '
+                                    //     + mediaDate.getHours().toString().padStart(2, '0') + ':'
+                                    //     + mediaDate.getMinutes().toString().padStart(2, '0') + ':'
+                                    //     + mediaDate.getSeconds().toString().padStart(2, '0');
+                                    // media.timestamp = formattedDt;
+                                });
+                                that.setState({ mediaList: data, filteredMediaList: data });
+                            },
+                                err => console.log(err)
+                            ).catch(err => console.log(err));
+                    });
+                }
+            },
+                err => console.log(err)
+            ).catch(err => console.log(err));
+    }
 
     /** Handler to open Edit modal when user clicks Edit icon */
     openEditModalHandler = () => {
@@ -156,7 +159,29 @@ class Profile extends Component {
 
     /** Handler to close Edit modal when user clicks Edit icon */
     closeEditModalHandler = () => {
-        this.setState({ editModalIsopen: !this.state.editModalIsopen })
+        this.setState({
+            editModalIsopen: !this.state.editModalIsopen,
+            fullName: ''
+        })
+    }
+
+    inputFullNameChangeHandler = (event) => {
+        this.setState({ fullName: event.target.value })
+    }
+
+    updateHandler = () => {
+        if (this.state.fullName === "") {
+            this.setState({ fullNameRequired: 'dispBlock' })
+            return;
+        } else {
+            this.setState({ fullNameRequired: 'dispNone' });
+        }
+
+        this.setState({
+            editModalIsopen: !this.state.editModalIsopen,
+            name: this.state.fullName,
+            fullName: ''
+        })
     }
 
     render() {
@@ -215,7 +240,7 @@ class Profile extends Component {
                     <div className={classes.editModalContent} style={{
                         top: "50%",
                         left: "50%",
-                        transform: "translate(-50%, -50%)", position:'relative'
+                        transform: "translate(-50%, -50%)", position: 'relative'
                     }}>
                         <FormControl className="modal-heading">
                             <Typography variant="h4">
@@ -226,13 +251,15 @@ class Profile extends Component {
                         <br />
                         <FormControl required>
                             <InputLabel htmlFor='fullName'>Full Name</InputLabel>
-                            <Input id='fullName' type='text'/>
-                            
+                            <Input id='fullName' type='text' onChange={this.inputFullNameChangeHandler} />
+                            <FormHelperText className={this.state.fullNameRequired}>
+                                <span className='required'>required</span>
+                            </FormHelperText>
                         </FormControl>
                         <br />
                         <br />
                         <br />
-                        <Button variant='contained' color='primary'>
+                        <Button variant='contained' color='primary' onClick={this.updateHandler}>
                             UPDATE
                         </Button>
                     </div>
