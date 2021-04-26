@@ -44,8 +44,6 @@ class Home extends Component {
             .then(rsp => {
                 if (rsp.status === 200) {
                     rsp.json().then(res => {
-                        console.log('res', res);
-                        //this.setState({mediaList: data});
                         const promises = res.data.map(item =>
                             fetch(
                                 `https://graph.instagram.com/${item.id}?fields=id,media_type,media_url,username,timestamp&access_token=${sessionStorage.getItem("access-token")}`
@@ -62,7 +60,6 @@ class Home extends Component {
                                 err => console.log(err)
                             )
                             .then(function (data) {
-                                console.log("data", data);
                                 data.forEach((media, i) => {
                                     const mediaCaption = res.data[i];
                                     if (mediaCaption.caption) {
@@ -133,7 +130,6 @@ class Home extends Component {
     /** Handler to search images based to the search text entered by the user*/
     searchHandler = (e) => {
         this.setState({ searchText: e.target.value }, () => {
-            console.log("entered : " + this.state.searchText);
             if (!this.state.searchText || this.state.searchText.trim() === "") {
                 this.setState({ filteredMediaList: this.state.mediaList });
             } else {
@@ -149,6 +145,23 @@ class Home extends Component {
 
     }
 
+    /**Handler to redirect to Profile Page when user clicks on My Account menu item */
+    myAccountHandler = () => {
+        var likeCountList = [];
+        var commentList = [];
+        this.state.filteredMediaList.forEach((media, i) => {
+            likeCountList.push({
+                count: media.likeCount,
+                likeStr: media.likeStr,
+                userLiked: media.userLiked                
+            })
+            commentList.push(media.comments);
+        });
+        sessionStorage.setItem('likeCountList', JSON.stringify(likeCountList));
+        sessionStorage.setItem('commentList', JSON.stringify(commentList));
+        this.props.history.push('/profile');
+    }
+
     render() {
         if (!this.state.loggedIn) {
             return (
@@ -159,7 +172,7 @@ class Home extends Component {
             <div>
                 {/** Header component included here */}
                 <Header loggedIn={this.state.loggedIn} homePage={true}
-                    history={this.props.history} searchHandler={this.searchHandler}/>
+                    history={this.props.history} searchHandler={this.searchHandler} myAccountHandler={this.myAccountHandler}/>
 
                 {/** Image Card begins here */}
                 <div className="media-container">

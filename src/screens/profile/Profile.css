@@ -1,0 +1,22 @@
+.info-section {
+    display: flex;
+    justify-content: center;
+    margin: 15px;
+    padding-right: 100px;
+}
+
+.avatar {
+    width: 130px;
+    height: 130px;
+}
+
+.profile-details {
+    padding-left: 50px;
+}
+
+.middle-line {
+    display: flex;
+    justify-content: space-between;
+    width: 500px;
+    margin-top: 8px;
+}

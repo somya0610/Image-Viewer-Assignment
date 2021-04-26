@@ -57,11 +57,6 @@ class Header extends Component {
         this.setState({ openMenu: !this.state.openMenu, anchorEl: null })
     }
 
-    /**Handler to redirect to Profile Page when user clicks on My Account menu item */
-    myAccountHandler = () => {
-        this.props.history.push('/profile');
-    }
-
     /**Handler to log out when user clicks on Logout menu item and remove access token from session */
     logoutHandler = () => {
         sessionStorage.removeItem('access-token');
@@ -104,7 +99,7 @@ class Header extends Component {
                                 anchorEl={this.state.anchorEl} getContentAnchorEl={null}
                                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }} keepMounted>
                                 {this.props.homePage ?
-                                    <StyledMenuItem onClick={this.myAccountHandler}>
+                                    <StyledMenuItem onClick={this.props.myAccountHandler}>
                                         <Typography>My Account</Typography>
                                     </StyledMenuItem>
                                     : ''}
