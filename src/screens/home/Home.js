@@ -28,9 +28,12 @@ class Home extends Component {
             filteredMediaList: []
         }
     }
+
     componentDidMount() {
         this.fetchImageDetails();
     }
+
+    
 
     fetchImageDetails = () => {
         let that = this;
@@ -76,12 +79,12 @@ class Home extends Component {
                                     media.comment = '';
 
                                     const mediaDate = new Date(media.timestamp);
-                                    const formattedDt = (mediaDate.getMonth()+1).toString().padStart(2, '0') + '/'
-                                    + mediaDate.getDate().toString().padStart(2, '0') + '/'
-                                    + mediaDate.getFullYear().toString().padStart(4, '0') + ' '
-                                    + mediaDate.getHours().toString().padStart(2, '0') + ':'
-                                    + mediaDate.getMinutes().toString().padStart(2, '0') + ':'
-                                    + mediaDate.getSeconds().toString().padStart(2, '0');
+                                    const formattedDt = (mediaDate.getMonth() + 1).toString().padStart(2, '0') + '/'
+                                        + mediaDate.getDate().toString().padStart(2, '0') + '/'
+                                        + mediaDate.getFullYear().toString().padStart(4, '0') + ' '
+                                        + mediaDate.getHours().toString().padStart(2, '0') + ':'
+                                        + mediaDate.getMinutes().toString().padStart(2, '0') + ':'
+                                        + mediaDate.getSeconds().toString().padStart(2, '0');
                                     media.timestamp = formattedDt;
                                 });
                                 that.setState({ mediaList: data, filteredMediaList: data });
@@ -93,6 +96,18 @@ class Home extends Component {
             },
                 err => console.log(err)
             ).catch(err => console.log(err));
+    }
+
+    favIconClickHandler = (likeIdx) => {
+        let tempMediaList = this.state.filteredMediaList;
+        tempMediaList.forEach((mediaObj, index) => {
+            if (index === likeIdx) {
+                mediaObj.userLiked ? --mediaObj.likeCount : ++mediaObj.likeCount;
+                mediaObj.likeCount > 1 ? mediaObj.likeStr = 'likes' : mediaObj.likeStr = 'like';
+                mediaObj.userLiked = !mediaObj.userLiked;
+            }
+        });
+        this.setState({ filteredMediaList: tempMediaList });
     }
 
     render() {
@@ -109,10 +124,8 @@ class Home extends Component {
                                 <Card key={"card_" + media.id} style={{ padding: '0 10px' }}>
                                     <CardHeader
                                         avatar={<Avatar variant="circular" src={profilePic} />}
-                                        // titleTypographyProps={{ fontSize: '30px', fontWeight: 'bold' }}
                                         title={media.username}
-                                        // subheaderTypographyProps={mediaCardStyles.subheader}
-                                        subheader={new Date(media.timestamp)} />
+                                        subheader={media.timestamp} />
                                     <CardContent>
                                         <div>
                                             <img src={media.media_url} alt={media.media_url} className="media-img" />
@@ -128,9 +141,11 @@ class Home extends Component {
                                         </div>
                                         <div className="media-icon-section">
                                             {media.userLiked ?
-                                                <FavoriteIcon style={{ color: red[500], fontSize: 30 }} />
+                                                <FavoriteIcon style={{ color: red[500], fontSize: 30 }}
+                                                    onClick={() => this.favIconClickHandler(index)} />
                                                 :
-                                                <FavoriteBorderIcon style={{ fontSize: 30 }} />}
+                                                <FavoriteBorderIcon style={{ fontSize: 30 }}
+                                                    onClick={() => this.favIconClickHandler(index)} />}
                                             <Typography style={{ paddingLeft: 15 }}>
                                                 {media.likeCount + ' ' + media.likeStr}
                                             </Typography>
