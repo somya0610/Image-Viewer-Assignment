@@ -47,3 +47,7 @@
     align-items: 'center';
     justify-content: 'center';
 }
+
+.image-section {
+    margin: 40px 70px;
+}

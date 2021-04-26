@@ -14,6 +14,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import Divider from '@material-ui/core/Divider';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import { red } from '@material-ui/core/colors';
 
 const styles = theme => ({
     avatar: {
@@ -92,7 +98,7 @@ class Profile extends Component {
                 if (rsp.status === 200) {
                     rsp.json().then(res => {
                         console.log('res', res);
-                        this.setState({numOfPosts: res.data.length});
+                        this.setState({ numOfPosts: res.data.length });
                         const promises = res.data.map(item =>
                             fetch(
                                 `https://graph.instagram.com/${item.id}?fields=id,media_type,media_url,username,timestamp&access_token=${this.state.accessToken}`
@@ -120,9 +126,7 @@ class Profile extends Component {
                                         media.caption = null;
                                     }
                                     console.log(that.state.likeCountList);
-                                    //console.log(this.state.likeCountList);
                                     console.log(that.state.commentList);
-                                    //console.log(this.state.commentList);
                                     media.likeCount = that.state.likeCountList[i].count;
                                     media.likeStr = that.state.likeCountList[i].likeStr;
                                     media.userLiked = that.state.likeCountList[i].userLiked;
@@ -165,10 +169,12 @@ class Profile extends Component {
         })
     }
 
+    /** Handler to update state variable 'fullName' as user enter details on the screen*/
     inputFullNameChangeHandler = (event) => {
         this.setState({ fullName: event.target.value })
     }
 
+    /** Handler to update user name on the user info section */
     updateHandler = () => {
         if (this.state.fullName === "") {
             this.setState({ fullNameRequired: 'dispBlock' })
@@ -233,6 +239,19 @@ class Profile extends Component {
                     </div>
                 </div>
                 {/** User Info section ends here */}
+
+                {/** Image section starts here */}
+                <div className="image-section">
+                    <GridList cols={3} cellHeight={450}>
+                        {this.state.mediaList.map(media => (
+                            <GridListTile
+                                key={"grid_" + media.id}>
+                                <img src={media.media_url} alt={media.caption} />
+                            </GridListTile>
+                        ))}
+                    </GridList>
+                </div>
+                {/** Image section starts here */}
 
                 {/** Edit Modal section starts here */}
                 <Modal open={this.state.editModalIsopen} onClose={this.closeEditModalHandler}
