@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
     margin: 15px;
-    padding-right: 100px;
+    padding-right: 8%;
 }
 
 .avatar {
@@ -11,7 +11,7 @@
 }
 
 .profile-details {
-    padding-left: 50px;
+    padding-left: 3%;
 }
 
 .middle-line {
