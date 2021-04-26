@@ -180,68 +180,67 @@ class Home extends Component {
                     history={this.props.history} searchHandler={this.searchHandler} myAccountHandler={this.myAccountHandler} />
 
                 {/** Image Card begins here */}
-                <div className="media-container">
-                    <Grid alignContent='center' container spacing={2} justify='flex-start' direction='row'>
-                        {this.state.filteredMediaList.map((media, index) => (
-                            <Grid item xs={6} key={"grid_" + media.id}>
-                                <Card key={"card_" + media.id} style={{ padding: '0 10px' }}>
-                                    <CardHeader
-                                        avatar={<Avatar variant="circular" src={profilePic} />}
-                                        title={media.username}
-                                        subheader={media.timestamp} />
-                                    <CardContent>
-                                        <div>
-                                            <img src={media.media_url} alt={media.media_url} className="media-img" />
-                                        </div>
-                                        <div className="media-dtl-divider">
-                                            <Divider variant="fullWidth" />
-                                        </div>
-                                        <div>
-                                            <Typography style={{ fontSize: '15px' }}>{media.trimmedCaption}</Typography>
-                                            <Typography style={{ fontSize: '15px', color: '#0ab7ff' }}>
-                                                {media.hashtags}
-                                            </Typography>
-                                        </div>
-                                        <div className="media-icon-section">
-                                            {media.userLiked ?
-                                                <FavoriteIcon style={{ color: red[500], fontSize: 30 }}
-                                                    onClick={() => this.favIconClickHandler(index)} />
-                                                :
-                                                <FavoriteBorderIcon style={{ fontSize: 30 }}
-                                                    onClick={() => this.favIconClickHandler(index)} />}
-                                            <Typography style={{ paddingLeft: 15 }}>
-                                                {media.likeCount + ' ' + media.likeStr}
-                                            </Typography>
-                                        </div>
-                                        <div className="comment-section">
-                                            {media.comments.length > 0 ?
-                                                (media.comments.map((comment, i) => (
-                                                    <p key={'comment_' + index + '_' + i} style={{ margin: '0 0 10px 0' }}>
-                                                        <b>{media.username}:</b> {comment.commentStr}
-                                                    </p>
-                                                )))
-                                                : ''}
-                                        </div>
-                                        <div>
-                                            <FormControl style={{ marginRight: 10 }} className='comment-form-control'>
-                                                <InputLabel htmlFor={'comment_' + index}>Add a comment</InputLabel>
-                                                <Input id={'comment_' + index} type='input'
-                                                    value={media.comment ? media.comment : ''}
-                                                    onChange={(e) => this.inputCommentChangeHandler(e, index)} />
-                                            </FormControl>
-                                            <FormControl style={{ verticalAlign: "bottom" }}>
-                                                <Button variant='contained' color='primary'
-                                                    onClick={() => this.addCommentHandler(index)}>
-                                                    ADD
+                <Grid alignContent='center' container spacing={2} justify='flex-start' direction='row'
+                    style={{ width: "85%", margin: "auto", paddingTop: 10}}>
+                    {this.state.filteredMediaList.map((media, index) => (
+                        <Grid item xs={6} key={"grid_" + media.id}>
+                            <Card key={"card_" + media.id} style={{ padding: '0 8px' }}>
+                                <CardHeader
+                                    avatar={<Avatar variant="circular" src={profilePic} />}
+                                    title={media.username}
+                                    subheader={media.timestamp} />
+                                <CardContent>
+                                    <div>
+                                        <img src={media.media_url} alt={media.media_url} className="media-img" />
+                                    </div>
+                                    <div className="media-dtl-divider">
+                                        <Divider variant="fullWidth" />
+                                    </div>
+                                    <div>
+                                        <Typography style={{ fontSize: '15px' }}>{media.trimmedCaption}</Typography>
+                                        <Typography style={{ fontSize: '15px', color: '#0ab7ff' }}>
+                                            {media.hashtags}
+                                        </Typography>
+                                    </div>
+                                    <div className="media-icon-section">
+                                        {media.userLiked ?
+                                            <FavoriteIcon style={{ color: red[500], fontSize: 30 }}
+                                                onClick={() => this.favIconClickHandler(index)} />
+                                            :
+                                            <FavoriteBorderIcon style={{ fontSize: 30 }}
+                                                onClick={() => this.favIconClickHandler(index)} />}
+                                        <Typography style={{ paddingLeft: 15 }}>
+                                            {media.likeCount + ' ' + media.likeStr}
+                                        </Typography>
+                                    </div>
+                                    <div className="comment-section">
+                                        {media.comments.length > 0 ?
+                                            (media.comments.map((comment, i) => (
+                                                <p key={'comment_' + index + '_' + i} style={{ margin: '0 0 10px 0' }}>
+                                                    <b>{media.username}:</b> {comment.commentStr}
+                                                </p>
+                                            )))
+                                            : ''}
+                                    </div>
+                                    <div>
+                                        <FormControl style={{ marginRight: 10 }} className='comment-form-control'>
+                                            <InputLabel htmlFor={'comment_' + index}>Add a comment</InputLabel>
+                                            <Input id={'comment_' + index} type='input'
+                                                value={media.comment ? media.comment : ''}
+                                                onChange={(e) => this.inputCommentChangeHandler(e, index)} />
+                                        </FormControl>
+                                        <FormControl style={{ verticalAlign: "bottom" }}>
+                                            <Button variant='contained' color='primary'
+                                                onClick={() => this.addCommentHandler(index)}>
+                                                ADD
                                                 </Button>
-                                            </FormControl>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </div>
+                                        </FormControl>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
                 {/** Image Card ends here */}
             </div>
         )

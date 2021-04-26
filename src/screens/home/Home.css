@@ -1,9 +1,5 @@
-.media-container {
-    margin: 15px 100px;
-}
-
 .media-img {
-    width: 600px;
+    width: 100%;
 }
 
 .media-dtl-divider {
@@ -21,7 +17,7 @@
 }
 
 .comment-form-control {
-    width: 500px;
+    width: 80%;
     margin-right: 10px;
 }
 

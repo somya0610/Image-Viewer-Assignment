@@ -93,7 +93,7 @@ class Header extends Component {
                                     } onChange={this.props.searchHandler} /> : ''}
                             <IconButton aria-controls="simple-menu" aria-haspopup="true"
                                 onClick={this.profileIconHandler} style={{ padding: "5px 10px" }}>
-                                <Avatar variant="circular" alt={profilePic} src={profilePic} ></Avatar>
+                                <Avatar variant="circular" alt={profilePic} src={profilePic} style={{border: '1px solid white'}} ></Avatar>
                             </IconButton>
                             <StyledMenu id="simple-menu" open={this.state.openMenu} onClose={this.closeMenu}
                                 anchorEl={this.state.anchorEl} getContentAnchorEl={null}
