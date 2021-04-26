@@ -26,7 +26,8 @@ class Home extends Component {
             loggedIn: sessionStorage.getItem("access-token") == null ? false : true,
             accessToken: sessionStorage.getItem("access-token"),
             mediaList: [],
-            filteredMediaList: []
+            filteredMediaList: [],
+            searchText: ''
         }
     }
 
@@ -112,14 +113,14 @@ class Home extends Component {
         this.setState({ filteredMediaList: tempMediaList });
     }
 
-    /** Method to update comment in state variable */
+    /** Handler to update comment in state variable */
     inputCommentChangeHandler = (e, idx) => {
         let tempMediaList = this.state.filteredMediaList;
         tempMediaList[idx].comment = e.target.value;
         this.setState({ filteredMediaList: tempMediaList });
     }
 
-    /** Method to add comment in an image card */
+    /** Handler to add comment in an image card */
     addCommentHandler = (idx) => {
         let tempMediaList = this.state.filteredMediaList;
         let tempComments = tempMediaList[idx].comments;
@@ -127,6 +128,25 @@ class Home extends Component {
         tempMediaList[idx].comments = tempComments;
         tempMediaList[idx].comment = '';
         this.setState({ filteredMediaList : tempMediaList });
+    }
+
+    /** Handler to search images based to the search text entered by the user*/
+    searchHandler = (e) => {
+        this.setState({ searchText: e.target.value }, () => {
+            console.log("entered : " + this.state.searchText);
+            if (!this.state.searchText || this.state.searchText.trim() === "") {
+                this.setState({ filteredMediaList: this.state.mediaList });
+            } else {
+                let filteredMedia = this.state.mediaList.filter((media) => {
+                    if (media.caption) {
+                        return media.caption.toUpperCase().indexOf(this.state.searchText.toUpperCase()) > -1
+                    }
+                    return false;
+                });
+                this.setState({ filteredMediaList: filteredMedia });
+            }
+        });
+
     }
 
     render() {
@@ -138,7 +158,8 @@ class Home extends Component {
         return (
             <div>
                 {/** Header component included here */}
-                <Header loggedIn={this.state.loggedIn} homePage={true} history={this.props.history} />
+                <Header loggedIn={this.state.loggedIn} homePage={true}
+                    history={this.props.history} searchHandler={this.searchHandler}/>
 
                 {/** Image Card begins here */}
                 <div className="media-container">
